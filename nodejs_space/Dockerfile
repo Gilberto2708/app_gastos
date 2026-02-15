@@ -46,6 +46,10 @@ RUN yarn prisma generate
 # Copy built application from builder
 COPY --from=builder /app/dist ./dist
 
+# Copy startup script
+COPY start.sh ./start.sh
+RUN chmod +x start.sh
+
 # Create uploads directory
 RUN mkdir -p uploads
 
@@ -53,8 +57,8 @@ RUN mkdir -p uploads
 EXPOSE 3000
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=30s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=3s --start-period=60s --retries=3 \
   CMD node -e "require('http').get('http://localhost:3000/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
 
-# Start the application with database migration (seed removed for faster startup)
-CMD ["sh", "-c", "yarn prisma db push && node dist/src/main.js"]
+# Start the application using the startup script
+CMD ["./start.sh"]
