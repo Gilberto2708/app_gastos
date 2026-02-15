@@ -80,11 +80,11 @@ async function bootstrap() {
   });
 
   const port = configService.get<number>('PORT', 3000);
-  await app.listen(port);
+  await app.listen(port, '0.0.0.0');
   
-  logger.log(`🚀 Server is running on http://localhost:${port}`);
-  logger.log(`📚 API Documentation: http://localhost:${port}/${swaggerPath}`);
-  logger.log(`❤️  Health check: http://localhost:${port}/health`);
+  logger.log(`🚀 Server is running on http://0.0.0.0:${port}`);
+  logger.log(`📚 API Documentation: http://0.0.0.0:${port}/${swaggerPath}`);
+  logger.log(`❤️  Health check: http://0.0.0.0:${port}/health`);
 }
 
 bootstrap();
