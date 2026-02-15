@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model auth {
+  id        String   @id @default(uuid())
+  pinhash   String   @unique
+  createdat DateTime @default(now())
+  updatedat DateTime @updatedAt
+}
+
+model categories {
+  id        String     @id @default(uuid())
+  name      String
+  color     String
+  icon      String
+  createdat DateTime   @default(now())
+  updatedat DateTime   @updatedAt
+  expenses  expenses[]
+}
+
+model expenses {
+  id          String     @id @default(uuid())
+  amount      Decimal    @db.Decimal(10, 2)
+  categoryid  String
+  date        DateTime
+  description String     @db.Text
+  receipturl  String?
+  createdat   DateTime   @default(now())
+  updatedat   DateTime   @updatedAt
+  category    categories @relation(fields: [categoryid], references: [id], onDelete: Cascade)
+
+  @@index([categoryid])
+  @@index([date])
+}
+
+enum BudgetType {
+  WEEKLY
+  MONTHLY
+}
+
+model budgets {
+  id        String     @id @default(uuid())
+  amount    Decimal    @db.Decimal(10, 2)
+  type      BudgetType
+  startdate DateTime
+  enddate   DateTime
+  createdat DateTime   @default(now())
+  updatedat DateTime   @updatedAt
+
+  @@index([startdate, enddate])
+}
