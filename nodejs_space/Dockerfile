@@ -56,5 +56,5 @@ EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=3s --start-period=30s --retries=3 \
   CMD node -e "require('http').get('http://localhost:3000/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
 
-# Start the application with database migration and seed
-CMD ["sh", "-c", "yarn prisma db push && yarn prisma db seed && node dist/src/main.js"]
+# Start the application with database migration (seed removed for faster startup)
+CMD ["sh", "-c", "yarn prisma db push && node dist/src/main.js"]
