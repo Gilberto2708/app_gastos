@@ -4,11 +4,14 @@ FROM node:18-alpine AS builder
 # Set working directory
 WORKDIR /app
 
+# Enable Corepack for Yarn 4.x support
+RUN corepack enable && corepack prepare yarn@4.12.0 --activate
+
 # Copy package files
 COPY package.json yarn.lock ./
 
 # Install dependencies
-RUN yarn install --frozen-lockfile
+RUN yarn install --immutable
 
 # Copy application files
 COPY . .
@@ -25,9 +28,12 @@ FROM node:18-alpine AS production
 # Set working directory
 WORKDIR /app
 
+# Enable Corepack for Yarn 4.x support
+RUN corepack enable && corepack prepare yarn@4.12.0 --activate
+
 # Install production dependencies only
 COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile --production
+RUN yarn install --immutable --production
 
 # Copy Prisma schema and migrations
 COPY prisma ./prisma
@@ -48,5 +54,5 @@ EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=3s --start-period=30s --retries=3 \
   CMD node -e "require('http').get('http://localhost:3000/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
 
-# Start the application
-CMD ["node", "dist/main"]
+# Start the application with database migration and seed
+CMD ["sh", "-c", "yarn prisma db push && yarn prisma db seed && node dist/src/main.js"]
