@@ -7,10 +7,10 @@ WORKDIR /app
 # Enable Corepack for Yarn 4.x support
 RUN corepack enable && corepack prepare yarn@4.12.0 --activate
 
-# Copy package files
-COPY package.json yarn.lock ./
+# Copy package files and Yarn config
+COPY package.json yarn.lock .yarnrc.yml ./
 
-# Install dependencies
+# Install dependencies (will create node_modules because of nodeLinker config)
 RUN yarn install --immutable
 
 # Copy application files
@@ -31,10 +31,10 @@ WORKDIR /app
 # Enable Corepack for Yarn 4.x support
 RUN corepack enable && corepack prepare yarn@4.12.0 --activate
 
-# Copy package files
-COPY package.json yarn.lock ./
+# Copy package files and Yarn config
+COPY package.json yarn.lock .yarnrc.yml ./
 
-# Install dependencies
+# Install dependencies (will create node_modules)
 RUN yarn install --immutable
 
 # Copy Prisma schema and migrations
